@@ -1,0 +1,17 @@
+{
+  "name": "Flappy Shooter",
+  "short_name": "Flappy Shooter",
+  "description": "Flappy Bird with bullets. Survive the pipes — or blast them out of your way.",
+  "start_url": "/",
+  "display": "standalone",
+  "theme_color": "#2A6A98",
+  "background_color": "#2A6A98",
+  "icons": [
+    {
+      "src": "/assets/icon.png",
+      "sizes": "1024x1024",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}

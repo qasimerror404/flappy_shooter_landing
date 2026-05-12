@@ -1,0 +1,395 @@
+<!doctype html>
+<html lang="en" dir="ltr">
+<head>
+<meta charset="utf-8">
+<title>Flappy Shooter — Flappy Bird with a twist</title>
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="description" content="Flappy Shooter is Flappy Bird with bullets. Fly, shoot pipes out of your way, and survive boss encounters every 10 pipes. Free on iOS and Android.">
+<meta name="theme-color" content="#2A6A98">
+<meta name="color-scheme" content="dark">
+
+<link rel="canonical" href="https://flappy-shooter-game.web.app/">
+
+<meta property="og:title" content="Flappy Shooter">
+<meta property="og:description" content="Flappy Bird with bullets. Survive the pipes — or blast them out of your way.">
+<meta property="og:image" content="https://flappy-shooter-game.web.app/assets/hero.png">
+<meta property="og:image:alt" content="Flappy Shooter — a yellow cartoon bird in front of a bright sky and mountains, with the game title beneath.">
+<meta property="og:url" content="https://flappy-shooter-game.web.app/">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Flappy Shooter">
+<meta property="og:locale" content="en_US">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Flappy Shooter">
+<meta name="twitter:description" content="Flappy Bird with bullets. Survive the pipes — or blast them out of your way.">
+<meta name="twitter:image" content="https://flappy-shooter-game.web.app/assets/hero.png">
+
+<link rel="icon" type="image/png" href="/assets/icon.png">
+<link rel="apple-touch-icon" href="/assets/icon.png">
+<link rel="manifest" href="/site.webmanifest">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="preload" as="image" href="/assets/hero.webp" type="image/webp" fetchpriority="high">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bungee&family=Inter:wght@400;500;700;800&display=swap">
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "MobileApplication",
+  "name": "Flappy Shooter",
+  "operatingSystem": "iOS, Android",
+  "applicationCategory": "GameApplication",
+  "image": "https://flappy-shooter-game.web.app/assets/icon.png",
+  "screenshot": "https://flappy-shooter-game.web.app/assets/hero.png",
+  "description": "Flappy Bird with a shooter twist. Survive the pipes — or blast them out of your way. Boss pipes every 10. Global leaderboard.",
+  "url": "https://flappy-shooter-game.web.app/",
+  "offers": {
+    "@type": "Offer",
+    "price": "0",
+    "priceCurrency": "USD"
+  },
+  "author": {
+    "@type": "Person",
+    "name": "Qasim Abbas"
+  }
+}
+</script>
+
+<style>
+  :root {
+    --sky-deep: #2A6A98;
+    --sky-mid: #3FA8CE;
+    --sky-light: #8FD4ED;
+    --bird: #FFD23F;
+    --bird-stroke: #F37822;
+    --text-accent: #FFE066;
+    --text-stroke: #6E5826;
+    --card: #1B1B1F;
+    --boss-accent: #FF6B6B;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body {
+    background: linear-gradient(180deg, var(--sky-deep) 0%, var(--sky-mid) 55%, var(--sky-light) 100%) no-repeat;
+    background-attachment: fixed;
+    min-height: 100%;
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    color: #fff;
+    -webkit-font-smoothing: antialiased;
+    line-height: 1.55;
+  }
+  body { overflow-x: hidden; }
+
+  :focus-visible {
+    outline: 3px solid var(--text-accent);
+    outline-offset: 3px;
+    border-radius: 4px;
+  }
+
+  .skip-link {
+    position: absolute;
+    top: -100px;
+    left: 12px;
+    padding: 10px 14px;
+    background: var(--card);
+    color: var(--text-accent);
+    text-decoration: none;
+    border-radius: 8px;
+    font-weight: 700;
+    letter-spacing: .12em;
+    font-size: 12px;
+    z-index: 100;
+  }
+  .skip-link:focus { top: 12px; }
+
+  .container { max-width: 1100px; margin: 0 auto; padding: 0 24px; }
+
+  /* HERO */
+  .hero { padding: 56px 24px 80px; text-align: center; position: relative; }
+  .hero__logo {
+    width: 92px;
+    height: 92px;
+    border-radius: 28px;
+    box-shadow: 0 12px 30px rgba(0,0,0,.35);
+    margin: 0 auto 18px;
+    display: block;
+  }
+  h1 {
+    font-family: 'Bungee', sans-serif;
+    font-size: clamp(48px, 11vw, 96px);
+    line-height: .95;
+    letter-spacing: .04em;
+    text-shadow: 0 6px 0 var(--text-stroke);
+  }
+  h1 .accent { color: var(--text-accent); text-shadow: 0 6px 0 var(--text-stroke); }
+  .tagline {
+    display: inline-block;
+    margin-top: 22px;
+    padding: 6px 16px;
+    border-radius: 999px;
+    background: rgba(0,0,0,.35);
+    color: var(--text-accent);
+    font-weight: 800;
+    letter-spacing: .3em;
+    font-size: 12px;
+    text-transform: uppercase;
+  }
+  .pitch {
+    max-width: 580px;
+    margin: 26px auto 0;
+    color: rgba(255,255,255,.92);
+    font-size: 18px;
+  }
+  .stores {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 12px;
+    margin: 32px 0 12px;
+  }
+  .store {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    padding: 12px 22px;
+    border-radius: 14px;
+    background: #1B1B1F;
+    color: #fff;
+    text-decoration: none;
+    font-weight: 700;
+    box-shadow: 0 10px 24px rgba(0,0,0,.25);
+    border: 1px solid rgba(255,255,255,.08);
+    transition: transform .15s ease, box-shadow .15s ease;
+  }
+  .store:hover, .store:focus-visible { transform: translateY(-2px); box-shadow: 0 14px 28px rgba(0,0,0,.32); }
+  .store[aria-disabled="true"] {
+    pointer-events: none;
+    cursor: default;
+    opacity: .72;
+    filter: grayscale(.25);
+  }
+  .store[aria-disabled="true"]:hover { transform: none; }
+  .coming-soon-pill {
+    display: inline-block;
+    margin-bottom: 6px;
+    padding: 4px 12px;
+    background: rgba(255, 224, 102, .92);
+    color: #1B1B1F;
+    font-weight: 800;
+    letter-spacing: .3em;
+    font-size: 10px;
+    text-transform: uppercase;
+    border-radius: 999px;
+  }
+  .store .label-small { font-size: 10px; letter-spacing: .18em; color: rgba(255,255,255,.65); text-transform: uppercase; }
+  .store .label-big { font-family: 'Bungee', sans-serif; font-size: 16px; letter-spacing: .08em; }
+  .store svg { width: 28px; height: 28px; flex-shrink: 0; }
+  .hero__phone {
+    margin: 56px auto 0;
+    max-width: 320px;
+    border-radius: 38px;
+    overflow: hidden;
+    box-shadow: 0 30px 60px rgba(0,0,0,.45);
+    border: 8px solid #1B1B1F;
+    aspect-ratio: 9 / 19.5;
+  }
+  .hero__phone img { width: 100%; height: 100%; object-fit: cover; display: block; }
+
+  /* FEATURES */
+  section.features {
+    padding: 80px 0 40px;
+    background: linear-gradient(180deg, transparent 0, rgba(27,27,31,.92) 30%, rgba(27,27,31,.92) 100%);
+  }
+  section.features h2 {
+    font-family: 'Bungee', sans-serif;
+    text-align: center;
+    font-size: clamp(28px, 5vw, 44px);
+    letter-spacing: .08em;
+    color: var(--text-accent);
+    margin-bottom: 8px;
+    text-shadow: 0 4px 0 var(--text-stroke);
+  }
+  section.features .subhead {
+    text-align: center;
+    color: rgba(255,255,255,.6);
+    letter-spacing: .3em;
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    margin-bottom: 48px;
+  }
+  .feature-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 16px;
+  }
+  .feature {
+    padding: 28px 22px;
+    background: rgba(255,255,255,.05);
+    border: 1px solid rgba(255,255,255,.1);
+    border-radius: 18px;
+  }
+  .feature .icon {
+    width: 52px;
+    height: 52px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 16px;
+    font-size: 24px;
+  }
+  .feature.bird .icon { background: rgba(255,210,63,.18); border: 1px solid rgba(255,210,63,.5); color: var(--bird); }
+  .feature.shoot .icon { background: rgba(255,224,102,.18); border: 1px solid rgba(255,224,102,.5); color: var(--text-accent); }
+  .feature.boss .icon { background: rgba(123,63,176,.22); border: 1px solid rgba(255,107,107,.5); color: var(--boss-accent); }
+  .feature.cloud .icon { background: rgba(63,168,206,.22); border: 1px solid rgba(63,168,206,.5); color: var(--sky-light); }
+  .feature h3 { font-family: 'Bungee', sans-serif; font-size: 18px; letter-spacing: .08em; margin-bottom: 8px; }
+  .feature p { font-size: 14px; color: rgba(255,255,255,.72); line-height: 1.55; }
+
+  /* CALLOUT */
+  section.callout { background: var(--card); padding: 80px 24px; text-align: center; }
+  section.callout h2 {
+    font-family: 'Bungee', sans-serif;
+    font-size: clamp(28px, 5vw, 44px);
+    letter-spacing: .08em;
+    margin-bottom: 14px;
+  }
+  section.callout p {
+    max-width: 520px;
+    margin: 0 auto 28px;
+    color: rgba(255,255,255,.75);
+    font-size: 16px;
+  }
+  .cta-primary {
+    display: inline-block;
+    background: linear-gradient(180deg, #FFE066 0%, #FFB347 100%);
+    color: #1B1B1F;
+    font-family: 'Bungee', sans-serif;
+    letter-spacing: .12em;
+    padding: 16px 32px;
+    border-radius: 14px;
+    text-decoration: none;
+    font-size: 16px;
+    box-shadow: 0 8px 20px rgba(255,179,71,.35);
+    transition: transform .15s ease;
+  }
+  .cta-primary:hover, .cta-primary:focus-visible { transform: translateY(-2px); }
+
+  /* FOOTER */
+  footer {
+    background: #14141a;
+    color: rgba(255,255,255,.55);
+    padding: 36px 24px 56px;
+    text-align: center;
+    font-size: 13px;
+  }
+  footer .links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 18px;
+    justify-content: center;
+    margin-bottom: 14px;
+  }
+  footer a { color: rgba(255,255,255,.75); text-decoration: none; letter-spacing: .08em; font-weight: 600; }
+  footer a:hover, footer a:focus-visible { color: var(--text-accent); }
+  footer .small { font-size: 11px; color: rgba(255,255,255,.4); letter-spacing: .1em; text-transform: uppercase; }
+
+  @media (max-width: 540px) {
+    .hero { padding: 36px 16px 56px; }
+    .hero__phone { max-width: 260px; }
+    section.features, section.callout { padding-left: 16px; padding-right: 16px; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+      animation-duration: 0.01ms !important;
+      transition: none !important;
+    }
+  }
+</style>
+</head>
+<body>
+
+<a class="skip-link" href="#main">Skip to content</a>
+
+<main id="main">
+  <section class="hero" aria-labelledby="hero-title">
+    <div class="container">
+      <img class="hero__logo" src="/assets/icon.png" alt="" width="92" height="92" aria-hidden="true">
+      <h1 id="hero-title">FLAPPY<br><span class="accent">SHOOTER</span></h1>
+      <span class="tagline">Shoot · Dodge · Survive</span>
+      <p class="pitch">
+        Flappy Bird with bullets. Survive the pipes — or blast them out of your way.
+        Boss pipes every 10. Global leaderboard. Daily runs that never play the same twice.
+      </p>
+      <div style="text-align:center; margin-top: 28px;">
+        <span class="coming-soon-pill">Coming Soon</span>
+      </div>
+      <div class="stores" role="group" aria-label="Where Flappy Shooter will be available">
+        <span class="store" aria-disabled="true" aria-label="App Store launch coming soon">
+          <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M17.05 12.04c-.03-2.85 2.33-4.22 2.43-4.28-1.32-1.94-3.39-2.2-4.13-2.23-1.76-.18-3.43 1.04-4.32 1.04-.91 0-2.27-1.01-3.74-.98-1.92.03-3.7 1.12-4.69 2.84-2 3.47-.51 8.6 1.44 11.42.95 1.38 2.08 2.92 3.55 2.87 1.43-.06 1.97-.93 3.69-.93s2.21.93 3.71.9c1.53-.03 2.5-1.4 3.44-2.79 1.08-1.6 1.53-3.16 1.55-3.24-.03-.01-2.96-1.14-2.99-4.52zM14.4 4.18c.78-.96 1.31-2.27 1.17-3.6-1.13.05-2.51.76-3.32 1.71-.72.84-1.36 2.21-1.19 3.49 1.27.1 2.55-.65 3.34-1.6z"/></svg>
+          <span><span class="label-small">Soon on the</span><br><span class="label-big">App Store</span></span>
+        </span>
+        <span class="store" aria-disabled="true" aria-label="Google Play launch coming soon">
+          <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M3.6 1.8C3.2 2.2 3 2.8 3 3.6v16.8c0 .8.2 1.4.6 1.8L13 13 3.6 1.8zm10.7 11.3l2.5-2.5L5.5 1.6c-.6-.3-1.1-.4-1.5-.2l10.3 11.7zm5.4-1.4l-2.3-1.3-2.8 2.7 2.8 2.7 2.3-1.3c.7-.4.9-1.4 0-2.8zM4 22.4c.4.2.9.1 1.5-.2l11.3-6.6-2.5-2.5L4 22.4z"/></svg>
+          <span><span class="label-small">Soon on</span><br><span class="label-big">Google Play</span></span>
+        </span>
+      </div>
+      <div class="hero__phone">
+        <picture>
+          <source srcset="/assets/hero.webp" type="image/webp">
+          <img src="/assets/hero.png"
+               alt="Flappy Shooter title screen on a phone — yellow bird flying in front of a bright sky with mountains below."
+               width="1024" height="2211"
+               fetchpriority="high"
+               decoding="async">
+        </picture>
+      </div>
+    </div>
+  </section>
+
+  <section class="features" aria-labelledby="features-title">
+    <div class="container">
+      <h2 id="features-title">What makes it different</h2>
+      <p class="subhead">One classic mechanic, three twists</p>
+      <div class="feature-grid">
+        <article class="feature bird">
+          <div class="icon" aria-hidden="true">⬆</div>
+          <h3>Tap to fly</h3>
+          <p>The classic Flappy panic-tap. Keep the bird airborne, thread the gap, don't crash into the ground.</p>
+        </article>
+        <article class="feature shoot">
+          <div class="icon" aria-hidden="true">✦</div>
+          <h3>Shoot pipes</h3>
+          <p>Limited ammo. Spend a round to blow a pipe up. Pickups along the way refill — but never enough.</p>
+        </article>
+        <article class="feature boss">
+          <div class="icon" aria-hidden="true">▰</div>
+          <h3>Boss every 10</h3>
+          <p>A drifting boss with HP arrives every ten pipes. Thread the moving gap — or burn it down.</p>
+        </article>
+        <article class="feature cloud">
+          <div class="icon" aria-hidden="true">☁</div>
+          <h3>Global leaderboard</h3>
+          <p>Sign in once, your scores sync everywhere. See where you rank against everyone playing.</p>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <section class="callout" aria-labelledby="callout-title">
+    <h2 id="callout-title">Free. No ads. Just bird stuff.</h2>
+    <p>Optional sign-in with Google saves your progress to the cloud. Toggle notifications on or off in Settings whenever.</p>
+    <a class="cta-primary" href="mailto:qasimerror404@gmail.com?subject=Notify%20me%20when%20Flappy%20Shooter%20launches">NOTIFY ME ON LAUNCH</a>
+  </section>
+</main>
+
+<footer>
+  <nav class="links" aria-label="Footer">
+    <a href="/privacy">Privacy Policy</a>
+    <a href="/terms">Terms of Service</a>
+    <a href="mailto:qasimerror404@gmail.com">Contact</a>
+  </nav>
+  <div class="small">© 2026 Flappy Shooter · Made with Flutter + Flame</div>
+</footer>
+
+</body>
+</html>
