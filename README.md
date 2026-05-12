@@ -64,14 +64,22 @@ flappy-shooter-landing/
 
 ## Go-live checklist
 
-### Before the apps ship
-The site is already deployable as a marketing page. The store buttons say "Coming Soon" and the bottom CTA collects launch interest via `mailto:qasimerror404@gmail.com`.
+### Current state
+- **Android**: direct APK download from R2 (https://pub-cd14a0e6ff394e538cbb949e81299967.r2.dev/flappy-shotter.apk) — the green badge + bottom CTA both link to it
+- **iOS**: still "Coming Soon" — App Store badge is disabled, links to mailto for launch interest
 
-### When apps go live, find-and-replace these
-- `<span class="store" aria-disabled="true"` in `index.html` → swap each to `<a class="store" href="https://apps.apple.com/..."` for App Store and `https://play.google.com/store/apps/details?id=com.qasim.flappyshooter` for Play Store
-- Remove the **Coming Soon** pill above the store buttons
-- Change the `mailto:` PLAY NOW back to a real store URL or a smart-link service like onelink.to
-- Search-and-replace `flappy-shooter-game.web.app` → your final Vercel domain across `index.html`, `sitemap.xml`, `robots.txt`. (Or replace with a custom domain once you've connected one.)
+### When the APK URL changes (new version / new bucket)
+- Two locations to update in `index.html`: the `<a class="store" href="…">` Android badge and the `<a class="cta-primary" href="…">` bottom CTA
+- Also update the `downloadUrl` and `installUrl` in the JSON-LD `MobileApplication` schema at the top of `index.html`
+
+### When iOS App Store ships
+- Replace `<span class="store" aria-disabled="true"` (the App Store one) with `<a class="store" href="https://apps.apple.com/..."`
+- Update the **Android beta available · iOS soon** pill to remove "iOS soon" once both are live
+- Update the install-hint paragraph below the bottom CTA
+- Update the JSON-LD `operatingSystem` from `"Android"` to `"iOS, Android"`
+
+### When the canonical / OG URLs change
+- Search-and-replace `flappy-shooter-game.web.app` → your final Vercel or custom domain across `index.html`, `sitemap.xml`, `robots.txt`
 
 ### After every deploy
 - [ ] Run the URL through https://search.google.com/test/rich-results — JSON-LD should validate as `MobileApplication`
